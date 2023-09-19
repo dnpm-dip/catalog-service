@@ -81,50 +81,12 @@ trait CatalogService[F[_],Env]
   ): F[Option[CodeSystemProvider[S,Id,Applicative[Id]]]]
 
 
-/*
-  def codeSystems(
-    implicit env: Env
-  ): F[Seq[CodeSystem.Info]]
-
-  def codeSystem(
-    uri: URI,
-    version: Option[String]
-  )(
-    implicit env: Env
-  ): F[Option[CodeSystem[Any]]]
-
-  def codeSystem[S](
-    version: Option[String]
-  )(
-    implicit
-    sys: Coding.System[S],
-    env: Env
-  ): F[Option[CodeSystem[S]]]
-*/
 
   import cats.syntax.functor._
 
   def codeSystemInfos(
     implicit env: Env
   ): F[Seq[CodeSystem.Info]] 
-/*  
-    self.codeSystemProviders
-      .map(
-        _.flatMap( csp => 
-           csp.versions
-             .toList
-             .flatMap(csp.get(_))
-             .map(
-               cs =>
-                 CodeSystem.Info(
-                   cs.title,
-                   cs.uri,
-                   cs.version
-                 )
-             )
-         )
-      )
-*/
 
   def codeSystem(
     uri: URI,

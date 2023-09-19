@@ -6,7 +6,7 @@
 
 name := "catalog-service"
 ThisBuild / organization := "de.dnpm.dip"
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "2.13.12"
 ThisBuild / version      := "1.0-SNAPSHOT"
 
 
@@ -32,7 +32,7 @@ lazy val api = project
     settings,
     libraryDependencies ++= Seq(
       dependencies.scalatest,
-      dependencies.model
+      dependencies.core
     )
   )
 
@@ -76,8 +76,7 @@ lazy val tests = project
 lazy val dependencies =
   new {
     val scalatest    = "org.scalatest" %% "scalatest"              % "3.1.1" % Test
-    val slf4j        = "org.slf4j"     %  "slf4j-api"              % "1.7.32"
-    val model        = "de.dnpm.dip"   %% "core"                   % "1.0-SNAPSHOT"
+    val core         = "de.dnpm.dip"   %% "core"                   % "1.0-SNAPSHOT"
     val atc_impl     = "de.dnpm.dip"   %% "atc-impl"               % "1.0-SNAPSHOT" % Test
     val atc_package  = "de.dnpm.dip"   %% "atc-catalogs-packaged"  % "1.0-SNAPSHOT" % Test
     val icd10gm_impl = "de.dnpm.dip"   %% "icd10gm-impl"           % "1.0-SNAPSHOT" % Test

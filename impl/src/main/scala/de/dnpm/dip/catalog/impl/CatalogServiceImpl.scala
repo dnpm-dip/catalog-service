@@ -175,6 +175,7 @@ private[impl] object CatalogServiceImpl extends Logging
        )
        .map(cs =>
          CodeSystem.Info(
+           cs.name,
            cs.title,
            cs.uri,
            cs.version
@@ -183,42 +184,6 @@ private[impl] object CatalogServiceImpl extends Logging
        .toSeq
        .pure
     }
-
-/*
-    override def codeSystem(
-      uri: URI,
-      version: Option[String]
-    )(
-      implicit F: Applicative[F]
-    ): F[Option[CodeSystem[Any]]] =
-      cspMap.get(uri)
-        .flatMap(csp =>
-          version match {
-            case None    => Some(csp.latest)
-            case Some(v) => csp.get(v)
-          }
-        )
-        .orElse(
-          loadedCodeSystems.get(uri)
-            .flatMap(cs =>
-              version match {
-                case None    => cs.maxByOption(_.version)
-                case Some(v) => cs.find(_.version == version)
-              }
-            )             
-        )
-        .pure
- 
-    override def codeSystem[S](
-      version: Option[String]
-    )(
-      implicit
-      sys: Coding.System[S],
-      F: Applicative[F]
-    ): F[Option[CodeSystem[S]]] =
-      codeSystem(sys.uri,version)
-        .map(_.map(_.asInstanceOf[CodeSystem[S]]))
-*/ 
    
 
   }
