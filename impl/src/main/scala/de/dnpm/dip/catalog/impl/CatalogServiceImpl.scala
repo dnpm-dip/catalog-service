@@ -118,6 +118,55 @@ private[impl] object CatalogServiceImpl extends Logging
     }
 */
 
+/*
+    override def codeSystemInfos(
+      implicit F: Applicative[F]
+    ): F[Seq[CodeSystem.Info]] = {
+       (
+        cspMap.values
+          .flatMap( csp =>
+            csp.versions
+              .toList
+              .map(
+                v => csp.get(v).get
+              )
+          )
+          ++ loadedCodeSystems.values.flatten
+       )
+       .map(cs =>
+         CodeSystem.Info(
+           cs.name,
+           cs.title,
+           cs.uri,
+           cs.version
+         )
+       )
+       .toSeq
+       .pure
+    }
+*/ 
+
+    override def infos(
+      implicit F: Applicative[F]
+    ): F[Seq[CodeSystemProvider.Info[Any]]] =
+      cspMap.values
+        .map {
+          csp =>
+            val latest = csp.latest
+
+            CodeSystemProvider.Info[Any](
+             latest.name,
+             latest.title,
+             csp.uri,
+             csp.versions.toList,
+             csp.latestVersion,
+             csp.filters,
+           )
+        }
+        .toSeq
+        .pure
+   
+
     override def codeSystemProviders(
       implicit F: Applicative[F]
     ): F[Seq[CodeSystemProvider[Any,Id,Applicative[Id]]]] =
@@ -157,34 +206,6 @@ private[impl] object CatalogServiceImpl extends Logging
         .getOrElse(List.empty)
         .pure
     }
-
- 
-    override def codeSystemInfos(
-      implicit F: Applicative[F]
-    ): F[Seq[CodeSystem.Info]] = {
-       (
-        cspMap.values
-          .flatMap( csp =>
-            csp.versions
-              .toList
-              .map(
-                v => csp.get(v).get
-              )
-          )
-          ++ loadedCodeSystems.values.flatten
-       )
-       .map(cs =>
-         CodeSystem.Info(
-           cs.name,
-           cs.title,
-           cs.uri,
-           cs.version
-         )
-       )
-       .toSeq
-       .pure
-    }
-   
 
   }
 

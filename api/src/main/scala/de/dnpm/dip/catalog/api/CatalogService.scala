@@ -10,6 +10,7 @@ import scala.concurrent.{
 import cats.{
   Applicative,
   Functor,
+  Monad,
   Id
 }
 import de.dnpm.dip.util.{
@@ -49,6 +50,15 @@ trait CatalogService[F[_],Env]
     self.withCodeSystems(cs.values)
 */
 
+/*
+  def codeSystemInfos(
+    implicit env: Env
+  ): F[Seq[CodeSystem.Info]] 
+*/
+
+  def infos(
+    implicit env: Env
+  ): F[Seq[CodeSystemProvider.Info[Any]]] 
 
   def versionsOf(
     uri: URI
@@ -83,11 +93,128 @@ trait CatalogService[F[_],Env]
 
 
   import cats.syntax.functor._
+  import cats.syntax.flatMap._
+  import cats.syntax.applicative._
+  import cats.syntax.traverse._
 
-  def codeSystemInfos(
-    implicit env: Env
-  ): F[Seq[CodeSystem.Info]] 
+  def codeSystem(
+    uri: URI,
+    version: Option[String],
+    filters: Option[List[List[String]]]
+  )(
+    implicit
+    env: Env,
+    F: Functor[F]
+  ): F[Option[CodeSystem[Any]]] =
+    for {
+      optCsp <- self.codeSystemProvider(uri)
 
+      codeSystem =
+        for {
+          csp <- optCsp
+
+          filter =
+            filters match {
+              case Some(nameGroups) if nameGroups.nonEmpty =>
+                Some(
+                  nameGroups
+                    .map(
+                      _.traverse(csp.filter(_))
+                       .flatten
+                       .reduce(_ or _)
+                    )
+                    .reduce(_ and _)
+                )
+              case _ => None
+            }
+          
+          cs <-
+            csp.get(version.getOrElse(csp.latestVersion))
+              .map(
+                cs =>
+                  filter match {
+                    case Some(f) => cs.filter(f)
+                    case None    => cs
+                  }                  
+              )
+        } yield cs
+ 
+    } yield codeSystem
+
+
+  def codeSystem[S](
+    version: Option[String],
+    filters: Option[List[List[String]]]
+  )(
+    implicit
+    sys: Coding.System[S],
+    env: Env,
+    F: Functor[F]
+  ): F[Option[CodeSystem[S]]] =
+    self.codeSystem(sys.uri,version,filters)
+      .map(
+        _.map(_.asInstanceOf[CodeSystem[S]])
+      )
+
+/*
+  def codeSystem(
+    uri: URI,
+    version: Option[String],
+    filters: Option[List[String]]
+  )(
+    implicit
+    env: Env,
+    F: Functor[F]
+  ): F[Option[CodeSystem[Any]]] =
+    for {
+      optCsp <- self.codeSystemProvider(uri)
+
+      codeSystem =
+        for {
+          csp <- optCsp
+
+          filter =
+            filters match {
+              case Some(names) if names.nonEmpty =>
+                Some(
+                  names
+                    .traverse(csp.filter(_))
+                    .flatten
+                    .reduce(_ and _)
+                )
+              case _ => None
+            }
+          
+          cs <-
+            csp.get(version.getOrElse(csp.latestVersion))
+              .map(
+                cs =>
+                  filter match {
+                    case Some(f) => cs.filter(f)
+                    case None    => cs
+                  }                  
+              )
+        } yield cs
+ 
+    } yield codeSystem
+
+
+  def codeSystem[S](
+    version: Option[String],
+    filters: Option[List[String]]
+  )(
+    implicit
+    sys: Coding.System[S],
+    env: Env,
+    F: Functor[F]
+  ): F[Option[CodeSystem[S]]] =
+    self.codeSystem(sys.uri,version,filters)
+      .map(
+        _.map(_.asInstanceOf[CodeSystem[S]])
+      )
+*/
+
+/*
   def codeSystem(
     uri: URI,
     version: Option[String]
@@ -115,28 +242,5 @@ trait CatalogService[F[_],Env]
       .map(
         _.map(_.asInstanceOf[CodeSystem[S]])
       )
-
-
-/*
-  def valueSets(
-    implicit env: Env
-  ): F[Seq[ValueSet.Info]]
-
-
-  def valueSet(
-    uri: URI,
-    version: Option[String]
-  )(
-    implicit env: Env
-  ): F[Option[ValueSet[Any]]]
-
-  def valueSet[S](
-    version: Option[String]
-  )(
-    implicit
-    sys: Coding.System[S],
-    env: Env
-  ): F[Option[ValueSet[S]]]
 */
-
 }

@@ -3,6 +3,7 @@ package de.dnpm.dip.catalog.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
+import org.scalatest.OptionValues._
 import org.scalatest.Inspectors._
 import cats.Id
 import de.dnpm.dip.model.{
@@ -27,7 +28,7 @@ class Tests extends AnyFlatSpec
 
   "All expected CodeSystems" must "have been loaded" in {
 
-    catalogService.codeSystemInfos.map(_.uri) must contain allOf (
+    catalogService.infos.map(_.uri) must contain allOf (
       Coding.System[ATC].uri,
       Coding.System[HGNC].uri,
       Coding.System[ICD10GM].uri,
@@ -42,8 +43,40 @@ class Tests extends AnyFlatSpec
 
   "CodeSystem HGNC" must "be defined" in {
 
-     catalogService.codeSystem[HGNC](version = None) must be (defined)
+     catalogService
+       .codeSystem[HGNC](
+         version = None,
+         filters = None
+       ) must be (defined)
 
+  }
+
+
+  "CodeSystem ICD-O-3-T" must "have be correctly retrieved and filtered" in {
+
+    import scala.util.matching.Regex
+    import de.dnpm.dip.coding.icd.ClassKinds.{Block,Category}
+
+    val icdO3Tcategory = """C\d{2}-C\d{2}|C\d{2}(.\d)?""".r
+
+    val icdO3T =
+      catalogService
+        .codeSystem[ICDO3](
+          version = None,
+          filters =
+            Some(
+              List(
+                List(ICDO3.topographyFilter.name),
+                List(
+                  ICDO3.filterByClassKind(Block).name,
+                  ICDO3.filterByClassKind(Category).name
+                )
+              )
+            )
+        )
+
+    all (icdO3T.value.concepts.map(_.code.value)) must fullyMatch regex icdO3Tcategory
+     
   }
 
 
