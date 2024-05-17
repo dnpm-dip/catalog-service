@@ -21,7 +21,8 @@ import de.dnpm.dip.coding.{
   Coding,
   CodeSystem,
   CodeSystemProvider,
-  ValueSet
+  ValueSet,
+  ValueSetProvider
 }
 
 
@@ -36,27 +37,13 @@ trait CatalogService[F[_],Env]
 {
   self =>
 
-/*
-  import CatalogService._
-
-  def withCodeSystems(
-    cs: Seq[CodeSystem[Any]]
-  ): CatalogService[F,Env]
+  import cats.syntax.functor._
+  import cats.syntax.flatMap._
+  import cats.syntax.applicative._
+  import cats.syntax.traverse._
 
 
-  def withImplicits[CS <: Product](
-    implicit cs: CodeSystems[CS]
-  ): CatalogService[F,Env] =
-    self.withCodeSystems(cs.values)
-*/
-
-/*
   def codeSystemInfos(
-    implicit env: Env
-  ): F[Seq[CodeSystem.Info]] 
-*/
-
-  def infos(
     implicit env: Env
   ): F[Seq[CodeSystemProvider.Info[Any]]] 
 
@@ -90,12 +77,6 @@ trait CatalogService[F[_],Env]
     env: Env
   ): F[Option[CodeSystemProvider[S,Id,Applicative[Id]]]]
 
-
-
-  import cats.syntax.functor._
-  import cats.syntax.flatMap._
-  import cats.syntax.applicative._
-  import cats.syntax.traverse._
 
   def codeSystem(
     uri: URI,
@@ -156,91 +137,63 @@ trait CatalogService[F[_],Env]
         _.map(_.asInstanceOf[CodeSystem[S]])
       )
 
-/*
-  def codeSystem(
+
+
+  def valueSetInfos(
+    implicit env: Env
+  ): F[Seq[ValueSetProvider.Info]] 
+
+
+  def valueSetProviders(
+    implicit env: Env
+  ): F[Seq[ValueSetProvider[Any,Id,Applicative[Id]]]]
+
+
+  def valueSetProvider(
+    uri: URI
+  )(
+    implicit env: Env
+  ): F[Option[ValueSetProvider[Any,Id,Applicative[Id]]]]
+
+
+  def valueSetProvider[S](
+    implicit
+    sys: Coding.System[S],
+    env: Env
+  ): F[Option[ValueSetProvider[S,Id,Applicative[Id]]]]
+
+
+  def valueSet(
     uri: URI,
-    version: Option[String],
-    filters: Option[List[String]]
+    version: Option[String]
   )(
     implicit
     env: Env,
     F: Functor[F]
-  ): F[Option[CodeSystem[Any]]] =
+  ): F[Option[ValueSet[Any]]] =
     for {
-      optCsp <- self.codeSystemProvider(uri)
+      optVsp <- self.valueSetProvider(uri)
 
-      codeSystem =
+      valueSet =
         for {
-          csp <- optCsp
-
-          filter =
-            filters match {
-              case Some(names) if names.nonEmpty =>
-                Some(
-                  names
-                    .traverse(csp.filter(_))
-                    .flatten
-                    .reduce(_ and _)
-                )
-              case _ => None
-            }
-          
-          cs <-
-            csp.get(version.getOrElse(csp.latestVersion))
-              .map(
-                cs =>
-                  filter match {
-                    case Some(f) => cs.filter(f)
-                    case None    => cs
-                  }                  
-              )
-        } yield cs
+          vsp <- optVsp
+          vs <- vsp.get(version.getOrElse(vsp.latestVersion))
+        } yield vs
  
-    } yield codeSystem
+    } yield valueSet
 
 
-  def codeSystem[S](
-    version: Option[String],
-    filters: Option[List[String]]
-  )(
-    implicit
-    sys: Coding.System[S],
-    env: Env,
-    F: Functor[F]
-  ): F[Option[CodeSystem[S]]] =
-    self.codeSystem(sys.uri,version,filters)
-      .map(
-        _.map(_.asInstanceOf[CodeSystem[S]])
-      )
-*/
-
-/*
-  def codeSystem(
-    uri: URI,
-    version: Option[String]
-  )(
-    implicit
-    env: Env,
-    F: Functor[F]
-  ): F[Option[CodeSystem[Any]]] =
-    self.codeSystemProvider(uri)
-      .map(
-        _.flatMap(
-          csp => csp.get(version.getOrElse(csp.latestVersion))
-        )
-      )
-
-  def codeSystem[S](
+  def valueSet[S](
     version: Option[String]
   )(
     implicit
     sys: Coding.System[S],
     env: Env,
     F: Functor[F]
-  ): F[Option[CodeSystem[S]]] =
-    self.codeSystem(sys.uri,version)
+  ): F[Option[ValueSet[S]]] =
+    self.valueSet(sys.uri,version)
       .map(
-        _.map(_.asInstanceOf[CodeSystem[S]])
+        _.map(_.asInstanceOf[ValueSet[S]])
       )
-*/
+
 }

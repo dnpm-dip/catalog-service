@@ -25,7 +25,9 @@ import de.dnpm.dip.coding.{
   CodeSystem,
   CodeSystemProvider,
   CodeSystemProviderSPI,
-  ValueSet
+  ValueSet,
+  ValueSetProvider,
+  ValueSetProviderSPI
 }
 import de.dnpm.dip.util.{
   SPI,
@@ -47,10 +49,6 @@ class CatalogServiceProviderImpl extends CatalogServiceProvider
 private[impl] object CatalogServiceImpl extends Logging
 {
 
-//  private val defaultCodeSystems: Map[URI,CodeSystem[Any]] =
-//    TrieMap.empty
-
-
   private val cspMap: Map[URI,CodeSystemProvider[Any,Id,Applicative[Id]]] = {
 
     import scala.jdk.StreamConverters._
@@ -58,6 +56,18 @@ private[impl] object CatalogServiceImpl extends Logging
     TrieMap.from(
       CodeSystemProvider.getInstances[Id]
         .map(csp => (csp.uri -> csp))
+        .toList
+    )
+
+  }
+
+  private val vspMap: Map[URI,ValueSetProvider[Any,Id,Applicative[Id]]] = {
+
+    import scala.jdk.StreamConverters._
+
+    TrieMap.from(
+      ValueSetProvider.getInstances[Id]
+        .map(vsp => (vsp.uri -> vsp))
         .toList
     )
 
@@ -106,47 +116,8 @@ private[impl] object CatalogServiceImpl extends Logging
     import cats.syntax.applicative._
     import cats.syntax.functor._
 
-/*
-    override def withCodeSystems(
-      css: Seq[CodeSystem[Any]]
-    ): CatalogService[F,Applicative[F]] = {
 
-      defaultCodeSystems ++=
-        css.map(cs => cs.uri -> cs)
-
-      this  
-    }
-*/
-
-/*
     override def codeSystemInfos(
-      implicit F: Applicative[F]
-    ): F[Seq[CodeSystem.Info]] = {
-       (
-        cspMap.values
-          .flatMap( csp =>
-            csp.versions
-              .toList
-              .map(
-                v => csp.get(v).get
-              )
-          )
-          ++ loadedCodeSystems.values.flatten
-       )
-       .map(cs =>
-         CodeSystem.Info(
-           cs.name,
-           cs.title,
-           cs.uri,
-           cs.version
-         )
-       )
-       .toSeq
-       .pure
-    }
-*/ 
-
-    override def infos(
       implicit F: Applicative[F]
     ): F[Seq[CodeSystemProvider.Info[Any]]] =
       cspMap.values
@@ -155,13 +126,13 @@ private[impl] object CatalogServiceImpl extends Logging
             val latest = csp.latest
 
             CodeSystemProvider.Info[Any](
-             latest.name,
-             latest.title,
-             csp.uri,
-             csp.versions.toList,
-             csp.latestVersion,
-             csp.filters,
-           )
+              latest.name,
+              latest.title,
+              csp.uri,
+              csp.versions.toList,
+              csp.latestVersion,
+              csp.filters
+            )
         }
         .toSeq
         .pure
@@ -206,6 +177,52 @@ private[impl] object CatalogServiceImpl extends Logging
         .getOrElse(List.empty)
         .pure
     }
+
+
+
+    override def valueSetInfos(
+      implicit F: Applicative[F]
+    ): F[Seq[ValueSetProvider.Info]] =
+      vspMap.values
+        .map {
+          vsp =>
+            val latest = vsp.latest
+
+            ValueSetProvider.Info(
+              latest.name,
+              latest.title,
+              vsp.uri,
+              vsp.versions.toList,
+              vsp.latestVersion,
+            )
+        }
+        .toSeq
+        .pure
+   
+    override def valueSetProviders(
+      implicit F: Applicative[F]
+    ): F[Seq[ValueSetProvider[Any,Id,Applicative[Id]]]] =
+      vspMap.values
+        .toSeq
+        .pure
+    
+    override def valueSetProvider(
+      uri: URI
+    )(
+      implicit F: Applicative[F]
+    ): F[Option[ValueSetProvider[Any,Id,Applicative[Id]]]] =
+      vspMap.get(uri)
+        .pure
+    
+    override def valueSetProvider[S](
+      implicit
+      sys: Coding.System[S],
+      F: Applicative[F]
+    ): F[Option[ValueSetProvider[S,Id,Applicative[Id]]]] =
+      this.valueSetProvider(sys.uri)
+        .map(
+          _.map(_.asInstanceOf[ValueSetProvider[S,Id,Applicative[Id]]])
+        )
 
   }
 

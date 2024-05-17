@@ -16,6 +16,7 @@ import de.dnpm.dip.coding.atc.ATC
 import de.dnpm.dip.coding.hgnc.HGNC
 import de.dnpm.dip.coding.icd.{ICD10GM,ICDO3}
 import de.dnpm.dip.catalog.api.CatalogService
+import de.dnpm.dip.rd.model.RDDiagnosis
 
 
 class Tests extends AnyFlatSpec
@@ -28,7 +29,7 @@ class Tests extends AnyFlatSpec
 
   "All expected CodeSystems" must "have been loaded" in {
 
-    catalogService.infos.map(_.uri) must contain allOf (
+    catalogService.codeSystemInfos.map(_.uri) must contain allOf (
       Coding.System[ATC].uri,
       Coding.System[HGNC].uri,
       Coding.System[ICD10GM].uri,
@@ -43,11 +44,11 @@ class Tests extends AnyFlatSpec
 
   "CodeSystem HGNC" must "be defined" in {
 
-     catalogService
-       .codeSystem[HGNC](
-         version = None,
-         filters = None
-       ) must be (defined)
+    catalogService
+      .codeSystem[HGNC](
+        version = None,
+        filters = None
+      ) must be (defined)
 
   }
 
@@ -79,5 +80,16 @@ class Tests extends AnyFlatSpec
      
   }
 
+
+  "ValueSet RDDiagnosis.Category" must "be defined" in {
+
+    import RDDiagnosis.Category._
+
+    catalogService
+      .valueSet[RDDiagnosis.Category](
+        version = None,
+      ) must be (defined)
+
+  }
 
 }

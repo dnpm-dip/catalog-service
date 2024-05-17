@@ -59,6 +59,9 @@ lazy val tests = project
       dependencies.icd10gm_impl,
       dependencies.icdo3_impl,
       dependencies.icd_package,
+      dependencies.rd_model,
+      dependencies.ordo,
+      dependencies.omim
     ),
     publish / skip := true
   )
@@ -83,6 +86,9 @@ lazy val dependencies =
     val icdo3_impl   = "de.dnpm.dip"   %% "icdo3-impl"             % "1.0-SNAPSHOT" % Test
     val icd_package  = "de.dnpm.dip"   %% "icd-claml-packaged"     % "1.0-SNAPSHOT" % Test
     val hgnc_impl    = "de.dnpm.dip"   %% "hgnc-gene-set-impl"     % "1.0-SNAPSHOT" % Test
+    val rd_model     = "de.dnpm.dip"   %% "rd-dto-model"           % "1.0-SNAPSHOT" % Test
+    val ordo         = "de.dnpm.dip"   %% "orphanet-ordo"          % "1.0-SNAPSHOT" % Test
+    val omim         = "de.dnpm.dip"   %% "omim-catalog"           % "1.0-SNAPSHOT" % Test
   }
 
 
