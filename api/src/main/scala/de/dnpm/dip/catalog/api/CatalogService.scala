@@ -2,17 +2,13 @@ package de.dnpm.dip.catalog.api
 
 
 import java.net.URI
-import scala.util.Either
-import scala.concurrent.{
-  Future,
-  ExecutionContext
-}
 import cats.{
   Applicative,
   Functor,
-  Monad,
   Id
 }
+import cats.syntax.functor._
+import cats.syntax.traverse._
 import de.dnpm.dip.util.{
   SPIF,
   SPILoaderF
@@ -36,11 +32,6 @@ object CatalogService extends SPILoaderF[CatalogServiceProvider]
 trait CatalogService[F[_],Env]
 {
   self =>
-
-  import cats.syntax.functor._
-  import cats.syntax.flatMap._
-  import cats.syntax.applicative._
-  import cats.syntax.traverse._
 
 
   def codeSystemInfos(

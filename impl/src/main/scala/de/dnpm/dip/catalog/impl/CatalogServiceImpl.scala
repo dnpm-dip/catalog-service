@@ -3,10 +3,8 @@ package de.dnpm.dip.catalog.impl
 
 import java.io.{
   InputStream,
-  FileInputStream
 }
 import java.net.URI
-import java.util.ServiceLoader
 import scala.collection.concurrent.{
   Map,
   TrieMap
@@ -24,10 +22,7 @@ import de.dnpm.dip.coding.{
   Coding,
   CodeSystem,
   CodeSystemProvider,
-  CodeSystemProviderSPI,
-  ValueSet,
   ValueSetProvider,
-  ValueSetProviderSPI
 }
 import de.dnpm.dip.util.{
   SPI,
@@ -49,29 +44,19 @@ class CatalogServiceProviderImpl extends CatalogServiceProvider
 private[impl] object CatalogServiceImpl extends Logging
 {
 
-  private val cspMap: Map[URI,CodeSystemProvider[Any,Id,Applicative[Id]]] = {
-
-    import scala.jdk.StreamConverters._
-
+  private val cspMap: Map[URI,CodeSystemProvider[Any,Id,Applicative[Id]]] = 
     TrieMap.from(
       CodeSystemProvider.getInstances[Id]
         .map(csp => (csp.uri -> csp))
         .toList
     )
 
-  }
-
-  private val vspMap: Map[URI,ValueSetProvider[Any,Id,Applicative[Id]]] = {
-
-    import scala.jdk.StreamConverters._
-
+  private val vspMap: Map[URI,ValueSetProvider[Any,Id,Applicative[Id]]] = 
     TrieMap.from(
       ValueSetProvider.getInstances[Id]
         .map(vsp => (vsp.uri -> vsp))
         .toList
     )
-
-  }
 
 
   //---------------------------------------------------------------------------
@@ -86,10 +71,7 @@ private[impl] object CatalogServiceImpl extends Logging
 
   object CodeSystemSource extends SPILoader[CodeSystemSourceSPI]
 
-  private val loadedCodeSystems: Map[URI,Seq[CodeSystem[Any]]] = {
-
-    import scala.jdk.StreamConverters._
-
+  private val loadedCodeSystems: Map[URI,Seq[CodeSystem[Any]]] =
     TrieMap.from(
       CodeSystemSource.getInstances
         .toSeq
@@ -104,7 +86,6 @@ private[impl] object CatalogServiceImpl extends Logging
         .map(_.get)
         .groupBy(_.uri)
     )
-  } 
 
   //---------------------------------------------------------------------------
   //---------------------------------------------------------------------------

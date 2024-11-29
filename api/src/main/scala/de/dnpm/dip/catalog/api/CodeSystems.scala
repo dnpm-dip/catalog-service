@@ -1,11 +1,7 @@
 package de.dnpm.dip.catalog.api
 
 
-import de.dnpm.dip.coding.{
-  Coding,
-  CodeSystem,
-  ValueSet
-}
+import de.dnpm.dip.coding.CodeSystem
 
 
 @annotation.implicitNotFound(
@@ -24,7 +20,7 @@ object CodeSystems
 
   implicit def genericCodeSystem[CS, CSpr](
     implicit
-    gen: Generic.Aux[CS,CSpr],
+    @annotation.unused gen: Generic.Aux[CS,CSpr],
     genCs: CodeSystems[CSpr]
   ): CodeSystems[CS] =
     new CodeSystems[CS]{
