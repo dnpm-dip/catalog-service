@@ -4,7 +4,6 @@ package de.dnpm.dip.catalog.test
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers._
 import org.scalatest.OptionValues._
-import org.scalatest.Inspectors._
 import cats.Id
 import de.dnpm.dip.model.{
   Gender,
@@ -55,7 +54,6 @@ class Tests extends AnyFlatSpec
 
   "CodeSystem ICD-O-3-T" must "have be correctly retrieved and filtered" in {
 
-    import scala.util.matching.Regex
     import de.dnpm.dip.coding.icd.ClassKinds.{Block,Category}
 
     val icdO3Tcategory = """C\d{2}-C\d{2}|C\d{2}(.\d)?""".r
