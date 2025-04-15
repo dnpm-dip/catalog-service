@@ -79,12 +79,12 @@ class Tests extends AnyFlatSpec
   }
 
 
-  "ValueSet RDDiagnosis.Category" must "be defined" in {
+  "ValueSet RDDiagnosis.Systems" must "be defined" in {
 
-    import RDDiagnosis.Category._
+    import RDDiagnosis.Systems._
 
     catalogService
-      .valueSet[RDDiagnosis.Category](
+      .valueSet[RDDiagnosis.Systems](
         version = None,
       ) must be (defined)
 
