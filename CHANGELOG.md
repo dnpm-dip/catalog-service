@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/dnpm-dip/catalog-service/compare/v1.0.0...v1.1.0) (2025-10-09)
+
+
+### Features
+
+* Upgraded dependency versions ([6797753](https://github.com/dnpm-dip/catalog-service/commit/6797753c71549e9bd4cf657ba210d381f73361b6))
+
 ## 1.0.0 (2025-08-06)
 
 
