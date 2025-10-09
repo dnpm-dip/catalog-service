@@ -6,7 +6,7 @@ import scala.util.Properties.envOrElse
 name := "catalog-service"
 ThisBuild / organization := "de.dnpm.dip"
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / version      := envOrElse("VERSION","1.0.0")
+ThisBuild / version      := envOrElse("VERSION","1.1.0")
 
 val ownerRepo  = envOrElse("REPOSITORY","dnpm-dip/catalog-service").split("/")
 ThisBuild / githubOwner      := ownerRepo(0)
@@ -82,16 +82,16 @@ lazy val tests = project
 lazy val dependencies =
   new {
     val scalatest    = "org.scalatest" %% "scalatest"             % "3.2.18" % Test
-    val core         = "de.dnpm.dip"   %% "core"                  % "1.0.0"
-    val atc_impl     = "de.dnpm.dip"   %% "atc-impl"              % "1.0.0" % Test
-    val atc_package  = "de.dnpm.dip"   %% "atc-catalogs-packaged" % "1.0.0" % Test
-    val icd10gm_impl = "de.dnpm.dip"   %% "icd10gm-impl"          % "1.0.0" % Test
-    val icdo3_impl   = "de.dnpm.dip"   %% "icdo3-impl"            % "1.0.0" % Test
-    val icd_package  = "de.dnpm.dip"   %% "icd-claml-packaged"    % "1.0.0" % Test
-    val hgnc_impl    = "de.dnpm.dip"   %% "hgnc-gene-set-impl"    % "1.0.0" % Test
-    val rd_model     = "de.dnpm.dip"   %% "rd-dto-model"          % "1.0.0" % Test
-    val ordo         = "de.dnpm.dip"   %% "orphanet-ordo"         % "1.0.0" % Test
-    val alpha_id_se  = "de.dnpm.dip"   %% "alpha-id-se"           % "1.0.0" % Test
+    val core         = "de.dnpm.dip"   %% "core"                  % "1.1.2"
+    val atc_impl     = "de.dnpm.dip"   %% "atc-impl"              % "1.1.0" % Test
+    val atc_package  = "de.dnpm.dip"   %% "atc-catalogs-packaged" % "1.1.0" % Test
+    val icd10gm_impl = "de.dnpm.dip"   %% "icd10gm-impl"          % "1.1.1" % Test
+    val icdo3_impl   = "de.dnpm.dip"   %% "icdo3-impl"            % "1.1.1" % Test
+    val icd_package  = "de.dnpm.dip"   %% "icd-claml-packaged"    % "1.1.1" % Test
+    val hgnc_impl    = "de.dnpm.dip"   %% "hgnc-gene-set-impl"    % "1.1.0" % Test
+    val rd_model     = "de.dnpm.dip"   %% "rd-dto-model"          % "1.1.0" % Test
+    val ordo         = "de.dnpm.dip"   %% "orphanet-ordo"         % "1.1.0" % Test
+    val alpha_id_se  = "de.dnpm.dip"   %% "alpha-id-se"           % "1.1.0" % Test
   }
 
 
