@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/dnpm-dip/catalog-service/compare/v1.1.0...v1.1.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* Bump core to 1.3.0, and test dependencies ([98a3b5d](https://github.com/dnpm-dip/catalog-service/commit/98a3b5d9a471fae8c03f2e43e7a5999be7871263))
+
 ## [1.1.0](https://github.com/dnpm-dip/catalog-service/compare/v1.0.0...v1.1.0) (2025-10-09)
 
 
